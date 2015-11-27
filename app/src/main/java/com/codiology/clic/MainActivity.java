@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,9 +14,53 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
+
+import java.util.List;
+
+import io.flic.lib.FlicButton;
+import io.flic.lib.FlicButtonCallback;
+import io.flic.lib.FlicButtonCallbackFlags;
+import io.flic.lib.FlicManager;
+import io.flic.lib.FlicManagerInitializedCallback;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static final String TAG = "MainActivity";
+    private FlicManager manager;
+
+    private FlicButtonCallback buttonCallback = new FlicButtonCallback() {
+        @Override
+        public void onButtonUpOrDown(FlicButton button, boolean wasQueued, int timeDiff, boolean isUp, boolean isDown) {
+            final String text = button + " was " + (isDown ? "pressed" : "released");
+            Log.d(TAG, text);
+
+            if (isUp) {
+                incrementCount();
+            }
+
+//            runOnUiThread(new Runnable() {
+//                @Override
+//                public void run() {
+//                    TextView tv = (TextView) findViewById(R.id.textView);
+//                    tv.setText(text);
+//                }
+//            });
+        }
+    };
+
+
+    private void setButtonCallback(FlicButton button) {
+        button.removeAllFlicButtonCallbacks();
+        button.addFlicButtonCallback(buttonCallback);
+        button.setFlicButtonCallbackFlags(FlicButtonCallbackFlags.UP_OR_DOWN);
+        button.setActiveMode(true);
+    }
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +89,67 @@ public class MainActivity extends AppCompatActivity
 
 
 
-//        FlicManager.setAppCredentials("[290f38cb-ca36-4091-951b-3f34734cfccc]", "[b2d329cd-b5bb-4259-9fbc-0bc1b1f8aea0]");
+        FlicManager.setAppCredentials("290f38cb-ca36-4091-951b-3f34734cfccc", "b2d329cd-b5bb-4259-9fbc-0bc1b1f8aea0", "Codiology Clic");
+
+        FlicManager.getInstance(this, new FlicManagerInitializedCallback() {
+
+
+            @Override
+            public void onInitialized(FlicManager manager) {
+                Log.d(TAG, "Ready to use manager");
+
+                MainActivity.this.manager = manager;
+
+                // Restore buttons grabbed in a previous run of the activity
+                List<FlicButton> buttons = manager.getKnownButtons();
+                for (FlicButton button : buttons) {
+                    String status = null;
+                    switch (button.getConnectionStatus()) {
+                        case FlicButton.BUTTON_DISCONNECTED:
+                            status = "disconnected";
+                            break;
+                        case FlicButton.BUTTON_CONNECTION_STARTED:
+                            status = "connection started";
+                            break;
+                        case FlicButton.BUTTON_CONNECTION_COMPLETED:
+                            status = "connection completed";
+                            break;
+                    }
+                    Log.d(TAG, "Found an existing button: " + button + ", status: " + status);
+                    setButtonCallback(button);
+                }
+            }
+
+
+        });
 
     }
+
+
+    @Override
+    protected void onDestroy() {
+        FlicManager.destroyInstance();
+        super.onDestroy();
+    }
+
+
+    public void grabButton(View v) {
+        if (manager != null) {
+            manager.initiateGrabButton(this);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        FlicButton button = manager.completeGrabButton(requestCode, resultCode, data);
+        if (button != null) {
+            Log.d(TAG, "Got a button: " + button);
+            setButtonCallback(button);
+        }
+    }
+
+
+
 
     @Override
     public void onBackPressed() {
@@ -107,7 +210,15 @@ public class MainActivity extends AppCompatActivity
 
     /** Called when the user clicks the Send button */
     public void sendMessage(View view) {
+        incrementCount();
+    }
+
+    /** Called when the user clicks the Send button */
+    public void incrementCount() {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
         startActivity(intent);
     }
+
+
+
 }

@@ -8,4 +8,6 @@
     <string name="button_send">Count</string>
     <string name="saved_count">saved_count</string>
     <string name="title_activity_display_message">Count</string>
+
+    <string name="hello_world">..something here..</string>
 </resources>
