@@ -12,22 +12,21 @@
     tools:context=".MainActivity">
 
     <Button
+        android:text="@string/button_reset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="sendMessage"
-        android:text="@string/button_send" />
+        android:onClick="resetData"/>
 
     <Button
-        android:text="Grab button"
+        android:text="@string/button_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="sendMessage"/>
+
+    <Button
+        android:text="@string/button_connect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="grabButton"/>
-
-    <TextView
-        android:id="@+id/textView"
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
 
 </LinearLayout>

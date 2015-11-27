@@ -1,5 +1,6 @@
 package com.codiology.clic;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +17,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.List;
 
 import io.flic.lib.FlicButton;
@@ -27,7 +31,11 @@ import io.flic.lib.FlicManagerInitializedCallback;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+
+    public static final String FILENAME = "clic.txt";
+
     private static final String TAG = "MainActivity";
+
     private FlicManager manager;
 
     private FlicButtonCallback buttonCallback = new FlicButtonCallback() {
@@ -39,14 +47,6 @@ public class MainActivity extends AppCompatActivity
             if (isUp) {
                 incrementCount();
             }
-
-//            runOnUiThread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    TextView tv = (TextView) findViewById(R.id.textView);
-//                    tv.setText(text);
-//                }
-//            });
         }
     };
 
@@ -57,9 +57,6 @@ public class MainActivity extends AppCompatActivity
         button.setFlicButtonCallbackFlags(FlicButtonCallbackFlags.UP_OR_DOWN);
         button.setActiveMode(true);
     }
-
-
-
 
 
     @Override
@@ -175,7 +172,6 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
         }
@@ -196,7 +192,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-
+            Intent intent = new Intent(this, DisplayMessageActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -209,16 +206,34 @@ public class MainActivity extends AppCompatActivity
     }
 
     /** Called when the user clicks the Send button */
+    public void resetData(View view) {
+        deleteFile(FILENAME);
+        Intent intent = new Intent(this, DisplayMessageActivity.class);
+        startActivity(intent);
+    }
+
+    /** Called when the user clicks the Send button */
     public void sendMessage(View view) {
         incrementCount();
     }
 
     /** Called when the user clicks the Send button */
     public void incrementCount() {
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd:HHmmss").format(Calendar.getInstance().getTime());
+        FileOutputStream outputStream;
+
+        try {
+            outputStream = openFileOutput(FILENAME, MODE_APPEND);
+            outputStream.write(timeStamp.getBytes());
+            outputStream.write(System.getProperty("line.separator").getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Intent intent = new Intent(this, DisplayMessageActivity.class);
         startActivity(intent);
     }
-
-
 
 }

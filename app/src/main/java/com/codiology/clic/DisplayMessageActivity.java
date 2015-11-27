@@ -10,6 +10,20 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Iterator;
+
 public class DisplayMessageActivity extends AppCompatActivity {
 
     @Override
@@ -29,17 +43,50 @@ public class DisplayMessageActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        //Context context = getActivity();
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        Integer highScore = sharedPref.getInt(getString(R.string.saved_count), 1);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        highScore++;
-        editor.putInt(getString(R.string.saved_count), highScore);
-        editor.commit();
+        ArrayList<Date> timestamps = new ArrayList<Date>();
+        StringBuilder text = new StringBuilder();
+
+        try {
+            FileInputStream in = openFileInput(MainActivity.FILENAME);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String line;
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd:HHmmss");
+
+            while ((line = br.readLine()) != null) {
+                try {
+                    Date date = format.parse(line);
+                    timestamps.add(date);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String clickCount = "0";
+
+        if (timestamps.isEmpty()) {
+            text.append("No timestamps");
+        } else {
+            DateFormat format = new SimpleDateFormat("dd/mmm/yyyy HH:mm:ss");
+            Iterator<Date> iterator = timestamps.iterator();
+            while (iterator.hasNext()) {
+                text.insert(0, format.format(iterator.next()) + System.getProperty("line.separator"));
+            }
+            clickCount = Integer.toString(timestamps.size());
+        }
 
         TextView editText = (TextView) findViewById(R.id.count_here);
-        editText.setText(highScore.toString());
+        editText.setText(clickCount);
         editText.setTextSize(40);
+
+        TextView timestampsText = (TextView) findViewById(R.id.timestamps);
+        timestampsText.setText(text.toString());
+        timestampsText.setTextSize(20);
 
     }
 
