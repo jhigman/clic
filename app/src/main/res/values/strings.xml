@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Clic</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="button_send">Count</string>
+    <string name="saved_count">saved_count</string>
+    <string name="title_activity_display_message">Count</string>
+</resources>
