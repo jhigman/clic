@@ -12,4 +12,6 @@
     <string name="title_activity_display_message">Count</string>
 
     <string name="hello_world">..something here..</string>
+    <string name="graph_title">Clicks</string>
+    <string name="title_activity_graph">Clicks</string>
 </resources>
