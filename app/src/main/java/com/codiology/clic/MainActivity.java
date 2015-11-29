@@ -40,11 +40,15 @@ public class MainActivity extends AppCompatActivity
 
     private FlicButtonCallback buttonCallback = new FlicButtonCallback() {
         @Override
-        public void onButtonUpOrDown(FlicButton button, boolean wasQueued, int timeDiff, boolean isUp, boolean isDown) {
-            final String text = button + " was " + (isDown ? "pressed" : "released");
-            Log.d(TAG, text);
+        public void onButtonSingleOrDoubleClickOrHold(FlicButton button, boolean wasQueued, int timeDiff, boolean isSingleClick, boolean isDoubleClick, boolean isHold) {
 
-            if (isUp) {
+            if (isHold) {
+                showGraph();
+            }
+            if (isDoubleClick) {
+                incrementCount();
+            }
+            if (isSingleClick) {
                 incrementCount();
             }
         }
@@ -54,7 +58,7 @@ public class MainActivity extends AppCompatActivity
     private void setButtonCallback(FlicButton button) {
         button.removeAllFlicButtonCallbacks();
         button.addFlicButtonCallback(buttonCallback);
-        button.setFlicButtonCallbackFlags(FlicButtonCallbackFlags.UP_OR_DOWN);
+        button.setFlicButtonCallbackFlags(FlicButtonCallbackFlags.CLICK_OR_DOUBLE_CLICK_OR_HOLD );
         button.setActiveMode(true);
     }
 
@@ -188,13 +192,11 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_camara) {
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
-            Intent intent = new Intent(this, GraphActivity.class);
-            startActivity(intent);
+            showGraph();
         } else if (id == R.id.nav_slideshow) {
 
         } else if (id == R.id.nav_manage) {
-            Intent intent = new Intent(this, DisplayMessageActivity.class);
-            startActivity(intent);
+
         } else if (id == R.id.nav_share) {
 
         } else if (id == R.id.nav_send) {
@@ -209,8 +211,7 @@ public class MainActivity extends AppCompatActivity
     /** Called when the user clicks the Send button */
     public void resetData(View view) {
         deleteFile(FILENAME);
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        startActivity(intent);
+        showTimestamps();
     }
 
     /** Called when the user clicks the Send button */
@@ -233,8 +234,16 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
 
+        showTimestamps();
+    }
+
+    public void showTimestamps() {
         Intent intent = new Intent(this, DisplayMessageActivity.class);
         startActivity(intent);
     }
 
+    public void showGraph() {
+        Intent intent = new Intent(this, GraphActivity.class);
+        startActivity(intent);
+    }
 }
