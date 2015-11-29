@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -15,14 +16,73 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
 
 public class GraphActivity extends AppCompatActivity {
+
+    private void showCount() {
+
+        ArrayList<Date> timestamps = new ArrayList<Date>();
+        StringBuilder text = new StringBuilder();
+
+        try {
+            FileInputStream in = openFileInput(MainActivity.FILENAME);
+            BufferedReader br = new BufferedReader(new InputStreamReader(in));
+            String line;
+
+            SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd:HHmmss");
+
+            while ((line = br.readLine()) != null) {
+                try {
+                    Date date = format.parse(line);
+                    timestamps.add(date);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String clickCount = "0";
+
+        if (timestamps.isEmpty()) {
+            text.append("No timestamps");
+        } else {
+            DateFormat format = new SimpleDateFormat("dd/mmm/yyyy HH:mm:ss");
+            Iterator<Date> iterator = timestamps.iterator();
+            while (iterator.hasNext()) {
+                text.insert(0, format.format(iterator.next()) + System.getProperty("line.separator"));
+            }
+            clickCount = Integer.toString(timestamps.size());
+        }
+
+//        setContentView(R.layout.activity_graph);
+
+        TextView editText = (TextView) findViewById(R.id.count_here);
+        editText.setText(clickCount);
+        editText.setTextSize(80);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_graph);
+
+        showCount();
+
         BarChart chart = (BarChart) findViewById(R.id.chart);
 
         BarData data = new BarData(getXAxisValues(), getDataSet());
