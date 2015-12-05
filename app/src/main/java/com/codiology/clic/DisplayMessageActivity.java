@@ -67,8 +67,6 @@ public class DisplayMessageActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        String clickCount = "0";
-
         if (timestamps.isEmpty()) {
             text.append("No timestamps");
         } else {
@@ -77,12 +75,7 @@ public class DisplayMessageActivity extends AppCompatActivity {
             while (iterator.hasNext()) {
                 text.insert(0, format.format(iterator.next()) + System.getProperty("line.separator"));
             }
-            clickCount = Integer.toString(timestamps.size());
         }
-
-        TextView editText = (TextView) findViewById(R.id.count_here);
-        editText.setText(clickCount);
-        editText.setTextSize(40);
 
         TextView timestampsText = (TextView) findViewById(R.id.timestamps);
         timestampsText.setText(text.toString());
