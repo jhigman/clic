@@ -28,8 +28,8 @@
                 android:value="com.codiology.clic.MainActivity" />
         </activity>
         <activity
-            android:name=".GraphActivity"
-            android:label="@string/title_activity_graph"
+            android:name=".ToolsActivity"
+            android:label="@string/title_activity_tools"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

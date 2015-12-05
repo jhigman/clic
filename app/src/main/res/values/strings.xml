@@ -14,4 +14,5 @@
     <string name="hello_world">..something here..</string>
     <string name="graph_title">Clicks</string>
     <string name="title_activity_graph">Clicks</string>
+    <string name="title_activity_tools">ToolsActivity</string>
 </resources>
